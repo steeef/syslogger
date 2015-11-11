@@ -4,7 +4,6 @@ import (
 	"bufio"
 	"flag"
 	"fmt"
-	"log"
 	"log/syslog"
 	"os"
 )
@@ -16,12 +15,12 @@ func main() {
 	scanner := bufio.NewScanner(os.Stdin)
 	logwriter, e := syslog.New(syslog.LOG_NOTICE|syslog.LOG_LOCAL4, *tag)
 	defer logwriter.Close()
-	if e == nil {
-		log.SetOutput(logwriter)
+	if e != nil {
+		os.Exit(1)
 	}
 
 	for scanner.Scan() {
-		log.Print(scanner.Text())
+		logwriter.Write([]byte(scanner.Text()))
 	}
 
 	if err := scanner.Err(); err != nil {
